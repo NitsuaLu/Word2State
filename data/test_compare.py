@@ -13,10 +13,10 @@ from data.loader_basic_english import tokenize as t_be
 def test_tokenizer_diff():
     """打印两版分词器行为差异。"""
     cases = [
-        "hello, world!",
-        "don't stop believin'",
-        "state-of-the-art @-@ technology",
-        "the (quick) brown fox .",
+        "Hello, World!",
+        "Don't Stop BelIevin'",
+        "State-of-the-art @-@ technology",
+        "The (Quick) brown fox .",
         "Valkyria 3 : <unk> Chronicles",
     ]
     print("=== 分词器差异 ===\n")

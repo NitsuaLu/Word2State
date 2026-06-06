@@ -38,6 +38,9 @@ def tokenize(text: str) -> list[str]:
     额外处理：保护 <unk> 不被 basic_english 拆碎（"<" "unk" ">" → "<unk>"）。
     对齐原代码 build_vocab_from_iterator(specials=["<unk>"]) 的行为。
     """
+    # 对齐 torchtext：全转小写
+    text = text.lower()
+
     # 保护 <unk>：用纯字母占位符替换，分词完成后再还原。
     # 对齐原代码 build_vocab_from_iterator(specials=["<unk>"]) 的行为。
     text = text.replace("<unk>", "zzUNKzz")

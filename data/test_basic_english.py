@@ -16,16 +16,16 @@ from data.loader_basic_english import (
 def test_tokenize():
     """分词器：保留标点为独立 token，保护 <unk>。"""
     # 标点剥离
-    assert tokenize("hello, world!") == ["hello", ",", "world", "!"]
-    assert tokenize("don't") == ["don", "'", "t"]
-    assert tokenize("the (quick)") == ["the", "(", "quick", ")"]
+    assert tokenize("Hello, World!") == ["hello", ",", "world", "!"]
+    assert tokenize("Don't") == ["don", "'", "t"]
+    assert tokenize("The (Quick)") == ["the", "(", "quick", ")"]
 
     # <unk> 保护：不应被拆碎
     assert tokenize("<unk>") == ["<unk>"]
-    assert tokenize("hello <unk> world") == ["hello", "<unk>", "world"]
-    assert tokenize("<unk> and <unk>") == ["<unk>", "and", "<unk>"]
+    assert tokenize("Hello <unk> World") == ["hello", "<unk>", "world"]
+    assert tokenize("<unk> AND <unk>") == ["<unk>", "and", "<unk>"]
     assert tokenize("Valkyria 3 : <unk> Chronicles") == [
-        "Valkyria", "3", ":", "<unk>", "Chronicles"
+        "valkyria", "3", ":", "<unk>", "chronicles"
     ]
 
     # 空输入
