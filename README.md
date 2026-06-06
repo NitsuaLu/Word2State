@@ -10,12 +10,13 @@ PyTorch 复现 [Word2State: Modeling Word Representations as States with Density
 
 ```
 .
-└── data/                         # 数据预处理模块
-    ├── loader.py                 #   正则版（丢弃标点，保留字母数字）
-    ├── loader_basic_english.py   #   basic_english 版（标点剥离为独立 token）
-    ├── test_regex.py             #   正则版单元测试
-    ├── test_basic_english.py     #   basic_english 版单元测试
-    └── test_compare.py           #   两版差异对比
+├── data/                                # 数据预处理模块
+│   ├── loader.py                        #   正则版（丢弃标点，保留字母数字）
+│   ├── loader_basic_english.py          #   basic_english 版（标点剥离为独立 token）
+│   └── loader_torchtext.py              #   torchtext 完整对齐版
+└── layers/                              # 核心层
+    ├── embedding.py                     #   ComplexEmbedding
+    └── mixture.py                       #   ComplexMixture
 ```
 
 ## 快速开始
@@ -35,8 +36,8 @@ scipy >= 1.13
 
 ```python
 from data.loader import get_cbow_dataloader
-# 或使用 basic_english 版
-# from data.loader_basic_english import get_cbow_dataloader
+# 或使用 torchtext 对齐版
+# from data.loader_torchtext import get_cbow_dataloader
 
 # WikiText2
 train_dl, valid_dl, vocab = get_cbow_dataloader(
@@ -49,12 +50,22 @@ train_dl, valid_dl, vocab = get_cbow_dataloader(
 )
 ```
 
+### 核心层
+
+```python
+from layers import ComplexEmbedding, ComplexMixture
+
+embed = ComplexEmbedding(vocab_size=50000, embedding_dim=300)
+mix = ComplexMixture()
+
+x = embed(torch.randint(0, 50000, (2, 8)))   # (2, 8, 300)
+rho = mix(x)                                   # (2, 300, 300)
+```
+
 ### 运行测试
 
 ```bash
-python data/test_regex.py             # 正则版测试
-python data/test_basic_english.py     # basic_english 版测试
-python data/test_compare.py           # 两版差异对比
+python layers/test_layers.py            # layers 单元测试
 ```
 
 ## 参考
