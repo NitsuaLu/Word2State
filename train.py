@@ -13,6 +13,7 @@
 import argparse
 import json
 import os
+import random
 import time
 import yaml
 
@@ -58,6 +59,12 @@ def train(config: dict):
 
     流程：加载数据 → 构建模型 → 训练/验证循环 → 保存制品。
     """
+    # 固定随机种子
+    seed = config.get("seed", 42)
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+
     os.makedirs(config["model_dir"], exist_ok=True)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")

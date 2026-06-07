@@ -38,6 +38,10 @@ def _get_lr_scheduler(optimizer, total_epochs):
 
 
 def run_one(model_name, dim, bs, lr, epochs):
+    # 固定随机种子，确保每组参数可复现
+    torch.manual_seed(42)
+    np.random.seed(42)
+
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     train_dl, _, vocab = get_cbow_dataloader(DATA_DIR, DS_NAME, bs, True)

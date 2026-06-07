@@ -8,6 +8,7 @@ data_loader: torchtext       # torchtext | basic_english | regex
 data_dir: dataset
 
 # 训练超参数
+seed: 42                     # 随机种子
 embedding_dim: 300           # 50 | 100 | 300
 epochs: 5
 train_batch_size: 128
