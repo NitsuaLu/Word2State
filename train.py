@@ -21,8 +21,21 @@ import torch
 import torch.nn as nn
 from torch import optim
 
-from data.loader_torchtext import get_cbow_dataloader
 from models import C_CBOW, R_CBOW
+
+
+def _get_dataloader(config: dict):
+    """根据 config['data_loader'] 选择对应的 data_loader 模块。"""
+    name = config.get("data_loader", "torchtext")
+    if name == "torchtext":
+        from data.loader_torchtext import get_cbow_dataloader
+    elif name == "basic_english":
+        from data.loader_basic_english import get_cbow_dataloader
+    elif name == "regex":
+        from data.loader import get_cbow_dataloader
+    else:
+        raise ValueError(f"Unknown data_loader: {name}")
+    return get_cbow_dataloader
 
 
 def get_model_class(model_name: str):
@@ -51,6 +64,7 @@ def train(config: dict):
     print(f"Device: {device}")
 
     # ---- 数据加载 ----
+    get_cbow_dataloader = _get_dataloader(config)
     dl_kwargs = {
         "data_dir": config["data_dir"],
         "ds_name": config["dataset"],
