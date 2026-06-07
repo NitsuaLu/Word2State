@@ -1,0 +1,26 @@
+# Word2State 训练配置
+
+model_name: c_cbow          # c_cbow | r_cbow
+dataset: WikiText103         # WikiText2 | WikiText103
+
+# 数据路径
+data_dir: dataset
+
+# 训练超参数
+embedding_dim: 300           # 50 | 100 | 300
+epochs: 5
+train_batch_size: 128
+val_batch_size: 128
+shuffle: true
+
+# 优化器
+optimizer: Adam
+learning_rate: 0.01
+
+# 可选
+train_steps:                 # 限制每 epoch 训练批数，留空 = 全量
+val_steps:                   # 限制每 epoch 验证批数，留空 = 全量
+checkpoint_frequency:        # 每 N epoch 保存一次 checkpoint，留空 = 不保存
+
+# 制品路径
+model_dir: weights/final/c_cbow_300d
