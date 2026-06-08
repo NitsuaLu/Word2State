@@ -14,9 +14,16 @@ PyTorch 复现 [Word2State: Modeling Word Representations as States with Density
 │   ├── loader.py                        #   正则版（丢弃标点，保留字母数字）
 │   ├── loader_basic_english.py          #   basic_english 版（标点剥离为独立 token）
 │   └── loader_torchtext.py              #   torchtext 完整对齐版
-└── layers/                              # 核心层
-    ├── embedding.py                     #   ComplexEmbedding
-    └── mixture.py                       #   ComplexMixture
+├── layers/                              # 核心层
+│   ├── embedding.py                     #   ComplexEmbedding
+│   ├── mixture.py                       #   ComplexMixture
+│   └── measurement.py                   #   ComplexMeasurement
+├── models/                              # 模型架构
+│   └── cbow.py                          #   C_CBOW / R_CBOW
+├── config/default.yaml                  # 训练配置
+├── train.py                             # 训练流水线
+├── hparam_search.py                     # 超参数网格搜索
+└── evaluate.py                          # 词相似度评估
 ```
 
 ## 快速开始
@@ -28,7 +35,6 @@ torch >= 2.0
 numpy >= 1.26
 pandas >= 2.2
 PyYAML >= 6.0
-scikit-learn >= 1.5
 scipy >= 1.13
 ```
 
@@ -62,12 +68,26 @@ x = embed(torch.randint(0, 50000, (2, 8)))   # (2, 8, 300)
 rho = mix(x)                                   # (2, 300, 300)
 ```
 
-### 运行测试
+### 训练
 
 ```bash
-python layers/test_layers.py            # layers 单元测试
+python train.py --config config/default.yaml
+```
+
+### 超参数搜索
+
+```bash
+python hparam_search.py
+```
+
+### 词相似度评估
+
+```bash
+python evaluate.py --model_dir weights/final/c_cbow_300d --model_name c_cbow
+python evaluate.py --model_dir weights/final/c_cbow_300d --model_name c_cbow --nearest spring --top 10
 ```
 
 ## 参考
 
 - 论文：Zhang C, Li Q, Su Z, et al. *Word2State: Modeling Word Representations as States with Density Matrices*. Chinese Journal of Electronics, 2025.
+- 原代码：[word2state](https://github.com/zhangchener/word2state)
