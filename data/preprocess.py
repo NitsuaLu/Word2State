@@ -2,14 +2,18 @@
 数据预处理脚本：一次性构建词表并缓存，后续训练直接加载。
 
 用法：
-  python data/preprocess.py --dataset WikiText103 --data_dir dataset
-  python data/preprocess.py --dataset wikitext-2 --data_dir dataset/WikiText2
+  python -m data.preprocess --dataset WikiText103 --data_dir dataset
+  python -m data.preprocess --dataset wikitext-2 --data_dir dataset/WikiText2
 """
 import argparse
 import os
+import sys
 import time
 
 import torch
+
+# 确保项目根目录在 sys.path 中（兼容 python data/preprocess.py 和 python -m data.preprocess）
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from data.loader_torchtext import get_cbow_dataloader
 
