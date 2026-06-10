@@ -96,6 +96,10 @@ def main():
             if key in completed:
                 continue
 
+            # C_CBOW 全 dim 排除 lr=0.1（已确认无法收敛）
+            if model_name == "c_cbow" and lr == 0.1:
+                continue
+
             print(f"[{len(results) + 1 + skipped}/{total}] "
                   f"{model_name} dim={dim} bs={bs} lr={lr} ep={ep} ...",
                   end=" ", flush=True)
