@@ -84,7 +84,7 @@ def train(config: dict):
 
     if os.path.exists(cache_path):
         print(f"Loading cached vocab from {cache_path}")
-        vocab = torch.load(cache_path)
+        vocab = torch.load(cache_path, weights_only=False)
         train_dl, _, _ = get_cbow_dataloader(vocab=vocab, **dl_kwargs)
         dl_kwargs["batch_size"] = config["val_batch_size"]
         dl_kwargs["shuffle"] = False
