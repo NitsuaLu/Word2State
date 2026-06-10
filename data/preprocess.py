@@ -33,7 +33,7 @@ def main():
 
     print(f"Building vocab for {args.dataset} ...")
     t0 = time.time()
-    _, _, vocab = get_cbow_dataloader(args.data_dir, args.dataset, batch_size=128)
+    _, _, vocab = get_cbow_dataloader(args.data_dir, args.dataset, batch_size=128, shuffle=True)
     torch.save(vocab, cache_path)
     elapsed = time.strftime("%H:%M:%S", time.gmtime(time.time() - t0))
     print(f"Done. Vocab size={len(vocab)}, time={elapsed}")
