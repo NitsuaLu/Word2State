@@ -78,10 +78,22 @@ def train(config: dict):
         "batch_size": config["train_batch_size"],
         "shuffle": config["shuffle"],
     }
-    train_dl, _, vocab = get_cbow_dataloader(**dl_kwargs)
-    dl_kwargs["batch_size"] = config["val_batch_size"]
-    dl_kwargs["shuffle"] = False
-    val_dl, _, _ = get_cbow_dataloader(vocab=vocab, **dl_kwargs)
+
+    ds_key = config['dataset'].lower().replace("-", "_")
+    cache_path = os.path.join(config["data_dir"], f"{ds_key}_vocab.pt")
+
+    if os.path.exists(cache_path):
+        print(f"Loading cached vocab from {cache_path}")
+        vocab = torch.load(cache_path)
+        train_dl, _, _ = get_cbow_dataloader(vocab=vocab, **dl_kwargs)
+        dl_kwargs["batch_size"] = config["val_batch_size"]
+        dl_kwargs["shuffle"] = False
+        val_dl, _, _ = get_cbow_dataloader(vocab=vocab, **dl_kwargs)
+    else:
+        train_dl, _, vocab = get_cbow_dataloader(**dl_kwargs)
+        dl_kwargs["batch_size"] = config["val_batch_size"]
+        dl_kwargs["shuffle"] = False
+        val_dl, _, _ = get_cbow_dataloader(vocab=vocab, **dl_kwargs)
 
     vocab_size = len(vocab)
     print(f"Vocabulary size: {vocab_size}")
