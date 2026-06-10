@@ -151,7 +151,9 @@ def train(config: dict):
         print(f"[{timestamp}] Epoch {epoch + 1:>2d}/{config['epochs']} | "
               f"Train Loss={train_loss:.4f} PPL={np.exp(train_loss):.2f} | "
               f"Val Loss={val_loss:.4f} PPL={np.exp(val_loss):.2f} | "
-              f"LR={current_lr:.6f} | {elapsed}")        if checkpoint_freq and (epoch + 1) % checkpoint_freq == 0:
+              f"LR={current_lr:.6f} | {elapsed}")
+
+        if checkpoint_freq and (epoch + 1) % checkpoint_freq == 0:
             ckpt_path = os.path.join(
                 config["model_dir"], f"checkpoint_{str(epoch + 1).zfill(3)}.pt")
             torch.save(model, ckpt_path)
