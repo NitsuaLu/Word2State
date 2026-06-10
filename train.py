@@ -86,6 +86,13 @@ def train(config: dict):
     vocab_size = len(vocab)
     print(f"Vocabulary size: {vocab_size}")
 
+    print(f"Dataset: {config['dataset']}")
+    print(f"Train batches: {len(train_dl)}, Val batches: {len(val_dl)}")
+    print(f"Model: {config['model_name']}, Dim: {config['embedding_dim']}, "
+          f"LR: {config['learning_rate']}, Epochs: {config['epochs']}")
+    print(f"Batch size (train/val): {config['train_batch_size']}/{config['val_batch_size']}")
+    print("-" * 60)
+
     # ---- 模型 ----
     model_class = get_model_class(config["model_name"])
     model = model_class(vocab_size, config["embedding_dim"]).to(device)
@@ -102,6 +109,8 @@ def train(config: dict):
 
     # ---- 训练循环 ----
     for epoch in range(config["epochs"]):
+        epoch_start = time.time()
+
         # train
         model.train()
         train_running = []
@@ -136,12 +145,13 @@ def train(config: dict):
 
         lr_scheduler.step()
 
+        current_lr = lr_scheduler.get_last_lr()[0]
+        elapsed = time.strftime("%H:%M:%S", time.gmtime(time.time() - epoch_start))
         timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
-        print(f"[{timestamp}] Epoch {epoch + 1}/{config['epochs']} | "
+        print(f"[{timestamp}] Epoch {epoch + 1:>2d}/{config['epochs']} | "
               f"Train Loss={train_loss:.4f} PPL={np.exp(train_loss):.2f} | "
-              f"Val Loss={val_loss:.4f} PPL={np.exp(val_loss):.2f}")
-
-        if checkpoint_freq and (epoch + 1) % checkpoint_freq == 0:
+              f"Val Loss={val_loss:.4f} PPL={np.exp(val_loss):.2f} | "
+              f"LR={current_lr:.6f} | {elapsed}")        if checkpoint_freq and (epoch + 1) % checkpoint_freq == 0:
             ckpt_path = os.path.join(
                 config["model_dir"], f"checkpoint_{str(epoch + 1).zfill(3)}.pt")
             torch.save(model, ckpt_path)
