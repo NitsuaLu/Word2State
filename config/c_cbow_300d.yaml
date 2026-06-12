@@ -1,0 +1,18 @@
+# Word2State 训练配置 — C_CBOW dim=300
+
+model_name: c_cbow
+dataset: WikiText103
+data_loader: torchtext
+
+data_dir: dataset
+seed: 42
+embedding_dim: 300
+epochs: 20
+train_batch_size: 512
+val_batch_size: 512
+shuffle: true
+
+optimizer: Adam
+learning_rate: 0.01
+
+model_dir: weights/final/c_cbow_300d
