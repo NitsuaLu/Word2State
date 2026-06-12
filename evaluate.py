@@ -19,6 +19,22 @@ import scipy.stats
 import torch
 import torch.nn.functional as F
 
+# 论文 Table 1 数据集顺序
+PAPER_DATASET_ORDER = {
+    "EN-MC-30": "MC-30",
+    "EN-RG-65": "RG-65",
+    "EN-MTurk-287": "MTurk-287",
+    "EN-MTurk-771": "MTurk-771",
+    "EN-MEN-TR-3k": "MEN-3k",
+    "EN-RW-STANFORD": "RW",
+    "SimLex-999": "SIMLEX-999",
+    "SimVerb-3500": "SimVerb-3500",
+    "EN-WS-353-ALL": "WordSim-353-ALL",
+    "EN-WS-353-REL": "WordSim-353-REL",
+    "EN-WS-353-SIM": "WordSim-353-SIM",
+    "EN-YP-130": "YP-130",
+}
+
 
 def load_model_vectors(model_dir: str, model_name: str) -> tuple[torch.Tensor, dict]:
     """加载模型并提取 L2 归一化词向量。
@@ -124,7 +140,7 @@ def load_dataset(filepath: str) -> pd.DataFrame | None:
 
 
 def run_evaluation(model_dir: str, model_name: str, data_dir: str):
-    """主评估：自动扫描数据集目录，逐文件评估。"""
+    """主评估：按论文 Table 1 顺序输出数据集结果。"""
     vectors, word_to_idx = load_model_vectors(model_dir, model_name)
     files = sorted(glob.glob(os.path.join(data_dir, "*.csv")) +
                    glob.glob(os.path.join(data_dir, "*.txt")))
@@ -132,18 +148,29 @@ def run_evaluation(model_dir: str, model_name: str, data_dir: str):
     print(f"{'Dataset':<25} {'#Pairs':>7} {'Spearman ρ':>11} {'Pearson r':>10}")
     print("-" * 55)
 
-    results = {}
+    # 按文件名建立索引
+    file_map = {}
     for f in files:
         name = os.path.splitext(os.path.basename(f))[0]
-        df = load_dataset(f)
+        file_map[name] = f
+
+    results = {}
+    ordered_names = list(PAPER_DATASET_ORDER.keys())  # 论文顺序
+    extra_names = sorted(set(file_map.keys()) - set(PAPER_DATASET_ORDER.keys()))  # 剩余放最后
+
+    for name in ordered_names + extra_names:
+        if name not in file_map:
+            continue
+        df = load_dataset(file_map[name])
         if df is None:
             continue
         rho, p, n = evaluate_one(df, vectors, word_to_idx, model_name)
-        print(f"{name:<25} {n:>7} {rho:>11.4f} {p:>10.4f}")
-        results[name] = {"spearman": round(rho, 4), "pearson": round(p, 4), "pairs": n}
+        display_name = PAPER_DATASET_ORDER.get(name, name)
+        print(f"{display_name:<25} {n:>7} {rho:>11.4f} {p:>10.4f}")
+        results[display_name] = {"spearman": round(rho, 4), "pearson": round(p, 4), "pairs": n}
 
     avg_rho = np.nanmean([r["spearman"] for r in results.values()])
-    print(f"\n{'Average (Spearman ρ × 100)':<25} {avg_rho * 100:>7.2f}")
+    print(f"\n{'Avg (Spearman ρ × 100)':<25} {avg_rho * 100:>7.2f}")
 
     return results
 
