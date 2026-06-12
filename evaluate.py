@@ -191,7 +191,7 @@ def find_nearest(model_dir: str, model_name: str,
     for i in range(len(vectors)):
         if i == word_to_idx[word]:
             continue
-        s = compute_similarity(vectors[i].unsqueeze(0), query.unsqueeze(0), model_name)
+        s = compute_similarity(vectors[i], query, model_name)
         sims.append((i, s))
 
     sims.sort(key=lambda x: -x[1])
