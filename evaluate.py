@@ -10,6 +10,7 @@
 """
 
 import argparse
+import math
 import os
 import glob
 
@@ -94,8 +95,11 @@ def evaluate_one(data: pd.DataFrame, vectors: torch.Tensor,
             continue
         v1 = vectors[word_to_idx[w1]]
         v2 = vectors[word_to_idx[w2]]
+        score = float(row["_score"])
+        if not score or math.isnan(score):
+            continue
         model_sim.append(compute_similarity(v1, v2, model_name))
-        human.append(float(row["_score"]))
+        human.append(score)
 
     if len(human) < 3:
         return float("nan"), float("nan"), len(human)
