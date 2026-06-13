@@ -68,7 +68,8 @@ def train(config: dict):
     os.makedirs(config["model_dir"], exist_ok=True)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    print(f"Device: {device}")
+    print(f"Device: {device}, GPUs available: {torch.cuda.device_count()}")
+    device_ids = config.get("device_ids")
 
     # ---- 数据加载 ----
     get_cbow_dataloader = _get_dataloader(config)
@@ -102,6 +103,8 @@ def train(config: dict):
     # ---- 模型 ----
     model_class = get_model_class(config["model_name"])
     model = model_class(vocab_size, config["embedding_dim"]).to(device)
+    if device_ids:
+        model = nn.DataParallel(model, device_ids=device_ids)
 
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=config["learning_rate"])
